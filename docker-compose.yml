@@ -1,0 +1,20 @@
+version: '3'
+
+networks:
+  docsify_network:
+    driver: bridge
+
+services:
+  docsify:
+    # user: ${CURRENT_UID}
+    image: docsify:latest
+    container_name: docsify_docsify
+    restart: unless-stopped
+    networks:
+      - docsify_network
+    ports:
+      - $HTTP_PORT:3000
+      - $LIVE_SERVER:$LIVE_SERVER
+    volumes:
+      - ./docs:/docs    # Source
+    command: serve --livereload-port=$LIVE_SERVER
