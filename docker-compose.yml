@@ -7,7 +7,7 @@ networks:
 services:
   docsify:
     # user: ${CURRENT_UID}
-    image:  sujaykumarh/docsify:latest
+    image:  ghcr.io/sujaykumarh/docsify:latest
     container_name: docsify_docsify
     restart: unless-stopped
     networks:
