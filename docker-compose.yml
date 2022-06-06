@@ -1,20 +1,40 @@
 version: '3'
 
 networks:
-  docsify_network:
+  docsify_net:
     driver: bridge
 
 services:
+  # docsify service to run docsify commands
   docsify:
-    # user: ${CURRENT_UID}
-    image:  ghcr.io/sujaykumarh/docsify:latest
-    container_name: docsify_docsify
+    image: ghcr.io/sujaykumarh/docsify:latest
+    container_name: ${CONTAINER_NAME:-docsify}
+    # user: ${CURRENT_USER:-1001:1010}
     restart: unless-stopped
+    working_dir: /docs
     networks:
-      - docsify_network
+      - docsify_net
     ports:
-      - $HTTP_PORT:3000
-      - $LIVE_SERVER:$LIVE_SERVER
+      - ${HTTP_PORT:-3000}:3000
+      - ${LIVE_SERVER_PORT:-3535}:${LIVE_SERVER_PORT:-3535}
     volumes:
-      - ./docs:/docs    # Source
-    command: serve --livereload-port=$LIVE_SERVER
+      # Docs Source
+      - ${DOCS_DIR:-./docs}:/docs
+    command: serve --livereload-port=${LIVE_SERVER_PORT:-3535}
+
+  # docsify server
+  server:
+    image: ghcr.io/sujaykumarh/docsify:latest
+    container_name: ${CONTAINER_NAME:-docsify}_server
+    # user: ${CURRENT_USER:-1000:1000}
+    restart: unless-stopped
+    working_dir: /docs
+    networks:
+      - docsify_net
+    ports:
+      - ${HTTP_PORT:-3000}:3000
+      - ${LIVE_SERVER_PORT:-3535}:${LIVE_SERVER_PORT:-3535}
+    volumes:
+      # Docs Source
+      - ${DOCS_DIR:-./docs}:/docs
+    command: serve --livereload-port=${LIVE_SERVER_PORT:-3535}
